@@ -1,8 +1,8 @@
 # SimplePythonServer
 
-* Usage: *
+# Usage:
 
 
-Start server:
-    
-		python server.py
+## Start server:
+	
+	python server.py
