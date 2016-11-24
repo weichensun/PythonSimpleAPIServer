@@ -1,6 +1,6 @@
 # SimplePythonServer
 
-*Usage:
+* Usage: *
 
 
 Start server:
