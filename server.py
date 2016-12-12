@@ -3,6 +3,7 @@
 
 from BaseHTTPServer import BaseHTTPRequestHandler
 from BaseHTTPServer import HTTPServer
+import json
 import time
 import ssl
 import cgi
@@ -34,6 +35,8 @@ class ServerHandler( BaseHTTPRequestHandler ):
 
         if ctype == 'text/plain':
             post_data = self.rfile.read(int(self.headers.getheader('Content-Length')))
+        elif ctype == 'application/json':
+            post_data = json.loads( self.rfile.read(int(self.headers.getheader('Content-Length'))) )
         elif ctype == 'application/x-www-form-urlencoded':
             length = int( self.headers.getheader( 'content-length' ) )
             post_data = cgi.parse_qs( self.rfile.read( length ), keep_blank_values = 1 )
