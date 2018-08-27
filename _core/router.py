@@ -3,13 +3,13 @@
 
 import imp
 
-def load_worker( path ):
+def load_worker(path):
 
-    from_list = path[:path.rfind('.')]
     try:
+        from_list = path[:path.rfind('.')]
         module = __import__( path, fromlist=[ from_list ] )
         module = imp.reload(module)
-    except ImportError:
+    except:
         return None
 
     if hasattr(module, 'API_Worker'):
@@ -55,3 +55,4 @@ class Router ():
         else:
             worker.process( path, headers, url_param, request_type, post_data, form )
             return Reply_Data( worker.message, worker.content_type, worker.error_code )
+

@@ -3,8 +3,7 @@
 
 from _core import worker_base
 
-class API_Worker( worker_base.API_Worker_Base ):
+class API_Worker(worker_base.API_Worker_Base):
 
     def do_GET( self ):
-        self.reply( 'Hello World', 'text/html', 200 )
-
+        self.reply('Hello World', 'text/html', 200)
