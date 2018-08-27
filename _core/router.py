@@ -37,9 +37,14 @@ class Router ():
 
         worker = None
         try:
-            route_rule = __import__( 'route._route_rules', fromlist = [ 'route' ] )
-            route_rule = imp.reload( route_rule )
-            worker = route_rule.get_worker( path )
+            route =  __import__( 'app.route', fromlist = [ 'app' ] )
+            route = imp.reload( route )
+            route_rules = route.get_rules()
+            if path in route_rules.keys():
+                worker = load_worker( route_rules[path] )
+            elif 'default' in route_rules.keys():
+                worker = load_worker( route_rules['default'] )
+
         except ImportError:
             pass
 
