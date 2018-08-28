@@ -15,5 +15,5 @@ A simple http server framework base on Python BaseHTTPServer
 
 ### Add new worker
 
-### Configure New Route
+### Add New Route
 
