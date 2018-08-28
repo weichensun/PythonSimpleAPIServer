@@ -22,6 +22,9 @@ class Http_Handler(BaseHTTPRequestHandler):
         self.processor  = Processor()
         BaseHTTPRequestHandler.__init__(self, *args)
 
+    def log_message(self, format, *args):
+        return
+
     def do_GET(self):
         self.process(request_types.GET)
 

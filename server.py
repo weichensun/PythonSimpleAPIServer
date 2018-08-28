@@ -37,15 +37,16 @@ class ThreadedHTTPServer(HTTPServer):
         thread = threading.Thread(target=self.__new_request, args=(self.RequestHandlerClass, request, client_address, self))
         thread.start()
     def __new_request(self, handlerClass, request, address, server):
-        handlerClass(request, address, server)
-        self.shutdown_request(request)
-
+        try:
+            handlerClass(request, address, server)
+            self.shutdown_request(request)
+        except:
+            pass
 # Main
 #
 if __name__ == '__main__':
 
     server_class = ThreadedHTTPServer
-#    httpd = server_class((HOST_NAME, PORT_NUMBER), ServerHandler)
     httpd = server_class((HOST_NAME, PORT_NUMBER), Http_Handler)
     if SSL_CERTIFICATE_PUBLIC_KEY_FILE != '' and SSL_CERTIFICATE_PRIVATE_KEY_FILE != '' :
         httpd.socket = ssl.wrap_socket(httpd.socket, keyfile=SSL_CERTIFICATE_PUBLIC_KEY_FILE,
