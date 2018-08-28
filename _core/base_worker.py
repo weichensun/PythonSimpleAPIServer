@@ -22,6 +22,7 @@ class Base_Worker():
         self.message = message
         self.content_type = content_type
         self.code = code
+        return self.get_response()
 
     def replyOK(self, message):
         if not self.isstr(message):
@@ -32,8 +33,8 @@ class Base_Worker():
             self.content_type = "application/json"
         else:
             self.content_type = "text/plain"
-
         self.code = 200
+        return self.get_response()
 
     def set_input_data(self, data):
         self.data = data
@@ -44,27 +45,6 @@ class Base_Worker():
         response['content_type']    = self.content_type
         response['message']         = self.message
         return response
-
-    # DDDD
-    def process( self, path, headers, url_param, request_type, post_data, form ):
-
-        self.path           = path
-        self.headers        = headers
-        self.url_param      = url_param
-        self.request_type   = request_type
-        self.post_data      = post_data
-        self.form           = form
-
-        if request_type == 'GET':
-            self.do_GET()
-        elif request_type == 'POST':
-            self.do_POST()
-        elif request_type == 'PUT':
-            self.do_PUT()
-        elif request_type == 'DELETE':
-            self.do_DELETE()
-        else:
-            self.reply( '', 'text/plain', 405 )
 
     def get_method_list(self):
         return { request_types.GET : self.do_GET,

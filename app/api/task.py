@@ -10,4 +10,4 @@ class task(Base_Worker):
         # We use ThreadedHTTPServer
         # A long task will not block other service request
         time.sleep(10)
-        self.replyOK('Task Complete')
+        return self.replyOK('Task Complete')

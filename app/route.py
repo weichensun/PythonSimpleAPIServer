@@ -16,8 +16,10 @@
 # If the class name is not supplied, the loader will find the class in the module
 #
 
-def get_rules():
+def get():
+
     route = {}
     route['/']          = 'app.api.index/Index'
     route['/task']      = ['app.api.task']
+
     return route

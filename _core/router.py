@@ -13,9 +13,9 @@ class Router ():
     def get_worker(self, path):
         worker = None
         try:
-            route =  __import__('app.route', fromlist = [ 'app' ])
+            route =  __import__('app.route', fromlist = ['app'])
             route = imp.reload( route )
-            route_rules = route.get_rules()
+            route_rules = route.get()
             if path in route_rules.keys():
                 module_info = route_rules[path]
                 if type(module_info) in [list, tuple]:
