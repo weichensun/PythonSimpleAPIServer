@@ -1,19 +1,24 @@
-### About
+## About
 
 A simple http server framework base on Python BaseHTTPServer
 
-### Features
+#### Features
 	Support python2 and python3
 	Use threading to process requests (No blocking)
+	Support https
 	Include simple route
 
-### Support methods
+#### Support methods
 	GET, POST, PUT, DELETE
 
-### Start server:
+## Usage:
+#### Start Server
 	python server.py
+	
+#### Test Server
+	curl localhost:5000
 
-### Add new worker
+#### Add new worker
 
-### Add New Route
+#### Add New Route
 
