@@ -3,12 +3,14 @@
 
 import json
 
+from _core import request_types
+
 class Base_Worker():
 
     def __init__( self ):
         self.message                = ''
         self.content_type           = ''
-        self.error_code             = 0
+        self.code                   = 0
         self.headers                = None
         self.url_param              = ''
         self.request_type           = ''
@@ -16,10 +18,10 @@ class Base_Worker():
         self.post_data              = None
         self.form                   = None
 
-    def reply( self, message, content_type, error_code ):
+    def reply( self, message, content_type, code ):
         self.message = message
         self.content_type = content_type
-        self.error_code = error_code
+        self.code = code
 
     def replyOK(self, message):
         if not self.isstr(message):
@@ -31,9 +33,19 @@ class Base_Worker():
         else:
             self.content_type = "text/plain"
 
-        self.error_code = 200
+        self.code = 200
 
+    def set_input_data(self, data):
+        self.data = data
 
+    def get_response(self):
+        response = {}
+        response['code']            = self.code
+        response['content_type']    = self.content_type
+        response['message']         = self.message
+        return response
+
+    # DDDD
     def process( self, path, headers, url_param, request_type, post_data, form ):
 
         self.path           = path
@@ -53,6 +65,12 @@ class Base_Worker():
             self.do_DELETE()
         else:
             self.reply( '', 'text/plain', 405 )
+
+    def get_method_list(self):
+        return { request_types.GET : self.do_GET,
+                 request_types.POST: self.do_POST,
+                 request_types.PUT: self.do_PUT,
+                 request_types.DELETE: self.do_DELETE }
 
     def do_GET( self ):
         self.reply( '', 'text/plain', 405 )
