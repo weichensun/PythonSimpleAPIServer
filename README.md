@@ -7,6 +7,7 @@ A simple http server framework base on Python BaseHTTPServer
 	Use threading to process requests (No blocking)
 	Support https
 	Include simple route
+	Dynamic load worker class
 
 #### Support methods
 	GET, POST, PUT, DELETE
