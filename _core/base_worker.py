@@ -1,7 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-class API_Worker_Base():
+import json
+
+class Base_Worker():
 
     def __init__( self ):
         self.message                = ''
@@ -18,6 +20,19 @@ class API_Worker_Base():
         self.message = message
         self.content_type = content_type
         self.error_code = error_code
+
+    def replyOK(self, message):
+        if type(message) not in [str, unicode]:
+            message = self.dict_to_json(message)
+        self.message = message
+
+        if self.is_json(message):
+            self.content_type = "application/json"
+        else:
+            self.content_type = "text/plain"
+
+        self.error_code = 200
+
 
     def process( self, path, headers, url_param, request_type, post_data, form ):
 
@@ -37,25 +52,32 @@ class API_Worker_Base():
         elif request_type == 'DELETE':
             self.do_DELETE()
         else:
-            self.reply( '', 'text/html', 405 )
+            self.reply( '', 'text/plain', 405 )
 
     def do_GET( self ):
-        self.reply( '', 'text/html', 405 )
+        self.reply( '', 'text/plain', 405 )
 
     def do_POST( self ):
-        self.reply( '', 'text/html', 405 )
+        self.reply( '', 'text/plain', 405 )
 
     def do_PUT( self ):
-        self.reply( '', 'text/html', 405 )
+        self.reply( '', 'text/plain', 405 )
 
     def do_DELETE( self ):
-        self.reply( '', 'text/html', 405 )
+        self.reply( '', 'text/plain', 405 )
 
+    def is_json(self, text):
+        if type(text) not in [str, unicode]:
+            return False
+        try:
+            json.loads(text)
+        except ValueError:
+            return False
+        return True
 
-
-
-
-
-
-
-
+    def dict_to_json(self, input):
+        try:
+            return json.dumps(input)
+        except:
+            print("Cannot parse to JSON")
+            return str(input)
