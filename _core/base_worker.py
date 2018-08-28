@@ -22,7 +22,7 @@ class Base_Worker():
         self.error_code = error_code
 
     def replyOK(self, message):
-        if type(message) not in [str, unicode]:
+        if not self.isstr(message):
             message = self.dict_to_json(message)
         self.message = message
 
@@ -66,11 +66,17 @@ class Base_Worker():
     def do_DELETE( self ):
         self.reply( '', 'text/plain', 405 )
 
-    def is_json(self, text):
-        if type(text) not in [str, unicode]:
+    def isstr(self, input):
+        try:
+            return isinstance(input, basestring) # For python2
+        except NameError:
+            return isinstance(input, str) # For python 3
+
+    def is_json(self, input):
+        if not self.isstr(input):
             return False
         try:
-            json.loads(text)
+            json.loads(input)
         except ValueError:
             return False
         return True
