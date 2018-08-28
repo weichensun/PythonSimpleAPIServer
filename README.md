@@ -26,6 +26,8 @@ A simple http server framework base on Python BaseHTTPServer
 
 #### Add New Route
 
+#### Use Regex With Route
+
 ## Get Request Data
 #### GET
 
