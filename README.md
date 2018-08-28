@@ -10,7 +10,10 @@ A simple http server framework base on Python BaseHTTPServer
 	Dynamic load worker class
 
 #### Support methods
-	GET, POST, PUT, DELETE
+	GET	-
+	POST	-
+	PUT	-
+	DELETE	-
 
 ## Usage:
 #### Start Server
@@ -23,3 +26,7 @@ A simple http server framework base on Python BaseHTTPServer
 
 #### Add New Route
 
+## Get Request Data
+#### GET
+
+#### POST
