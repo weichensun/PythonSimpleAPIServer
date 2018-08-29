@@ -8,9 +8,11 @@ from _core import request_types
 class Base_Worker():
 
     def __init__( self ):
+        # For reply data
         self.message                = ''
         self.content_type           = ''
         self.code                   = 0
+        # Input data
         self.headers                = None
         self.url_param              = ''
         self.request_type           = ''
@@ -83,5 +85,5 @@ class Base_Worker():
         try:
             return json.dumps(input)
         except:
-            print("Cannot parse to JSON")
+            Log.le("Cannot parse to JSON")
             return str(input)

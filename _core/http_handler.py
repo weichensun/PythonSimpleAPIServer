@@ -10,20 +10,29 @@ else:
     from urllib.parse import urlparse
 
 import json
+import time
 from _core import request_types
 from _core.router import Router
 from _core.processor import Processor
-
+from _core.log import Log
 
 class Http_Handler(BaseHTTPRequestHandler):
 
     def __init__(self, *args):
         self.router     = Router()
         self.processor  = Processor()
+        self.duration   = 0
         BaseHTTPRequestHandler.__init__(self, *args)
 
     def log_message(self, format, *args):
-        return
+        client_addr = self.headers.getheader('X-Forwarded-For')
+        if client_addr == None:
+            client_addr = self.client_address[0]
+        code = args[1]
+        request_info = args[0].split()
+        request_type = request_info[0]
+        request_path  = request_info[1]
+        Log.l("[REQUEST][%s][%s][%s][%s][%s][%.2f ms]" % (time.asctime(), client_addr, code, request_type, request_path, self.duration))
 
     def do_GET(self):
         self.process(request_types.GET)
@@ -59,6 +68,7 @@ class Http_Handler(BaseHTTPRequestHandler):
         self.process(request_types.DELETE)
 
     def process(self, request_type):
+        begin_time = time.time()
         # process url
         parsed_url      = urlparse(self.path)
         resource_path   = parsed_url.path
@@ -70,8 +80,10 @@ class Http_Handler(BaseHTTPRequestHandler):
             self.do_HEAD(404, 'application/json')
             self.wfile.write('{"status":404,"message":"NOT_FOUND"}')
         else:
+            # Start worker
             worker.set_input_data(self.get_input_data(request_type))
             response = self.processor.process(request_type, worker)
+            self.duration = (time.time() - begin_time) * 1000
             self.do_HEAD(response['code'], response['content_type'])
             self.wfile.write(str.encode(response['message']))
         if sys.version_info[0] < 3:

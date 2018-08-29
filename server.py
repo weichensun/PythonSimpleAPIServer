@@ -8,6 +8,7 @@ if sys.version_info[0] < 3:
 else:
     from http.server import BaseHTTPRequestHandler, HTTPServer
 
+import traceback
 import threading
 import resource
 import json
@@ -16,6 +17,7 @@ import ssl
 import cgi
 from _core.router import Router
 from _core.http_handler import Http_Handler
+from _core.log import Log
 
 # Settings
 #
@@ -32,6 +34,8 @@ SSL_CERTIFICATE_PRIVATE_KEY_FILE = ''
 # Reference from
 # https://stackoverflow.com/questions/19537132
 #
+import socket
+import errno
 class ThreadedHTTPServer(HTTPServer):
     def process_request(self, request, client_address):
         thread = threading.Thread(target=self.__new_request, args=(self.RequestHandlerClass, request, client_address, self))
@@ -40,8 +44,14 @@ class ThreadedHTTPServer(HTTPServer):
         try:
             handlerClass(request, address, server)
             self.shutdown_request(request)
-        except:
+        except socket.error as e:
+            if e.errno != errno.EPIPE:
+                raise
+            Log.l("Client disconnected ...")
+            Log.l(traceback.extract_stack())
+            Log.l(e)
             pass
+
 # Main
 #
 if __name__ == '__main__':
@@ -52,7 +62,7 @@ if __name__ == '__main__':
         httpd.socket = ssl.wrap_socket(httpd.socket, keyfile=SSL_CERTIFICATE_PUBLIC_KEY_FILE,
                                         certfile=SSL_CERTIFICATE_PRIVATE_KEY_FILE, server_side=True)
 
-    print("%s Server Starts - %s:%s" % (time.asctime(), HOST_NAME, PORT_NUMBER))
+    Log.l("[SERVER][%s][SERVER_START][%s][%s]" % (time.asctime(), HOST_NAME, PORT_NUMBER))
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
@@ -61,6 +71,6 @@ if __name__ == '__main__':
         pass
 
     httpd.server_close()
-    print("%s Server Stops - %s:%s" % (time.asctime(), HOST_NAME, PORT_NUMBER))
+    Log.l("[SERVER][%s][SERVER_STOP][%s][%s]" % (time.asctime(), HOST_NAME, PORT_NUMBER))
 
 
