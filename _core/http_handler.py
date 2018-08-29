@@ -25,7 +25,7 @@ class Http_Handler(BaseHTTPRequestHandler):
         BaseHTTPRequestHandler.__init__(self, *args)
 
     def log_message(self, format, *args):
-        client_addr = self.headers.getheader('X-Forwarded-For')
+        client_addr = self.headers.get('X-Forwarded-For')
         if client_addr == None:
             client_addr = self.client_address[0]
         code = args[1]
