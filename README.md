@@ -15,20 +15,49 @@ A simple http server framework base on Python BaseHTTPServer
 	PUT	-
 	DELETE	-
 
-## Usage:
+## Quick Start:
 #### Start Server
 	python server.py
 	
 #### Test Server
 	curl localhost:5000
 
-#### Add new worker
+## Route Settings
 
-#### Add New Route
+### Add New Route
 
-#### Use Regex With Route
+	To set route, just need to modify app/route.py and specify route and worker
 
-## Get Request Data
-#### GET
+### Route Settings
 
-#### POST
+#### Route Parameters
+	
+Default
+	
+	'/request/path/{KEY}'
+
+Number only
+
+	'/request/path/{VAR_NAME|n}'
+	
+Charactor only
+
+	'/request/path/{VAR_NAME|c}'
+
+#### Worker
+
+The worker definition
+
+	{WORKER_MODULE_PATH}/{WORKER_CLASS_NAME}
+
+Supply module path and class name
+
+	'app.api.index/Index'
+
+Supply module path only
+
+	'app.api.index'
+
+The loader will automatically load the first worker class under the module
+	
+	
