@@ -34,15 +34,16 @@ A simple http server framework base on Python BaseHTTPServer
 	
 Default
 	
-	'/request/path/{KEY}'
+	'/request/path/{VAR_NAME}'
 
-Number only
+Filter Number only
 
 	'/request/path/{VAR_NAME|n}'
 	
-Charactor only
+Filter Charactor only
 
 	'/request/path/{VAR_NAME|c}'
+
 
 #### Worker
 
