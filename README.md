@@ -49,13 +49,13 @@ Filter Charactor only
 
 The worker definition
 
-	{WORKER_MODULE_PATH}/{WORKER_CLASS_NAME}
+	{WORKER_MODULE_PATH}(/{WORKER_CLASS_NAME})
 
-Supply module path and class name
+Supply module path and class name (class name is optional)
 
 	'app.api.index/Index'
 
-Supply module path only
+So, if only module path is supplied like
 
 	'app.api.index'
 
