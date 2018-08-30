@@ -25,7 +25,7 @@ class Router ():
             for route in route.route_list:
                 matched = self.match_pattern_and_path(route.pattern, path)
                 if matched:
-                    worker = self.load_worker(route.worker_module_path)
+                    worker = self.worker_loader.load(route.worker_module_path)
                     break
 
         except ImportError:
@@ -61,22 +61,3 @@ class Router ():
             return Router.Match(url_variables)
 
         return None
-
-
-    def load_worker(self, module_info):
-        worker = None
-        try:
-            if type(module_info) in [list, tuple]:
-                if len(module_info) > 1:
-                    worker =  self.worker_loader.load(module_info[0], module_info[1])
-                elif len(module_info) > 0:
-                    worker =  self.worker_loader.load(module_info[0])
-            elif type(module_info) is str:
-                if '/' in module_info:
-                   worker =  self.worker_loader.load(module_info[:module_info.find('/')], module_info[module_info.find('/')+1:])
-                else:
-                    worker =  self.worker_loader.load(module_info)
-        except ImportError:
-            pass
-
-        return worker

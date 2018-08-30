@@ -2,15 +2,22 @@
 # -*- coding: utf-8 -*-
 
 from _core.base_worker import Base_Worker
+import re
 import imp
 import sys
 import inspect
 
 class Worker_Loader:
 
-    def load(self, module_path, class_name = ''):
+    def load(self, module_path):
         worker = None
         try:
+            class_name = ''
+            if '/' in module_path:
+                match = re.match("([^*\/]+)/([^*\/]+)", module_path)
+                module_path = match.groups()[0]
+                class_name = match.groups()[1]
+
             from_list = module_path.rfind('.')
             module = __import__(module_path)
             module = __import__(module_path, fromlist=[ from_list ] )
