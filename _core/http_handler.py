@@ -75,26 +75,32 @@ class Http_Handler(BaseHTTPRequestHandler):
         url_query       = parsed_url.query
 
         # get worker
-        worker = self.router.get_worker(resource_path)
+        worker = self.router.get_worker_by_path(resource_path)
         if worker == None:
-            self.do_HEAD(404, 'application/json')
-            self.wfile.write('{"status":404,"message":"NOT_FOUND"}')
+            self.write_header(404, 'application/json')
+            self.write_response('{"status":404,"message":"NOT_FOUND"}')
         else:
             # Start worker
             worker.set_input_data(self.get_input_data(request_type))
             response = self.processor.process(request_type, worker)
             self.duration = (time.time() - begin_time) * 1000
-            self.do_HEAD(response['code'], response['content_type'])
-            self.wfile.write(str.encode(response['message']))
+            self.write_header(response['code'], response['content_type'])
+            self.write_response(response['message'])
+
+        # close wfile for python2.x
         if sys.version_info[0] < 3:
             self.wfile.close()
-
-    def do_HEAD(self, errorCode, content_type):
-        self.send_response(errorCode)
-        self.send_header('Content-type', content_type)
-        self.end_headers()
-
 
     def get_input_data(self, request_type):
         return None
 
+    def write_header(self, errorCode, content_type):
+        self.send_response(errorCode)
+        self.send_header('Content-type', content_type)
+        self.end_headers()
+
+    def write_response(self, message):
+        if type(message) is str:
+            self.wfile.write(str.encode(message))
+        else:
+            self.wfile.write(message)
