@@ -3,7 +3,7 @@
 
 from _core.base_worker import Base_Worker
 
-class Object(Base_Worker):
+class HelloWorld(Base_Worker):
 
     def do_GET(self):
-        return self.replyOK("The object id is %s." % self.route_parameter("id"))
+        return self.replyOK('Hello World!')
