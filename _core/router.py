@@ -9,8 +9,8 @@ from _core.worker_loader import Worker_Loader
 class Router ():
 
     class Match():
-        def __init__(self, url_variables):
-            self.url_variables = url_variables
+        def __init__(self, route_parameters):
+            self.route_parameters = route_parameters
 
     def __init__(self):
         self.worker_loader = Worker_Loader()
@@ -26,6 +26,7 @@ class Router ():
                 matched = self.match_pattern_and_path(route.pattern, path)
                 if matched:
                     worker = self.worker_loader.load(route.worker_module_path)
+                    worker.set_route_parameters(matched.route_parameters)
                     break
 
         except ImportError:
@@ -55,9 +56,9 @@ class Router ():
 
         match = re.match(rule, path)
         if match:
-            url_variables = {}
+            route_parameters = {}
             if len(key_list) > 0:
-                url_variables = dict(zip(key_list, match.groups()))
-            return Router.Match(url_variables)
+                route_parameters = dict(zip(key_list, match.groups()))
+            return Router.Match(route_parameters)
 
         return None

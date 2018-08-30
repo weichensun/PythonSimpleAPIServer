@@ -12,6 +12,10 @@ class Base_Worker():
         self.message                = ''
         self.content_type           = ''
         self.code                   = 0
+
+        # Input data
+        self.route_parameters       = {}
+
         # Input data
         self.headers                = None
         self.url_param              = ''
@@ -41,6 +45,14 @@ class Base_Worker():
     def set_input_data(self, data):
         self.data = data
 
+    def set_route_parameters(self, route_parameters):
+        self.route_parameters = route_parameters
+
+    def route_parameter(self, key):
+        if key in self.route_parameters:
+            return self.route_parameters[key]
+        return ''
+
     def get_response(self):
         response = {}
         response['code']            = self.code
@@ -48,6 +60,7 @@ class Base_Worker():
         response['message']         = self.message
         return response
 
+    # A tricky way to load methods
     def get_method_list(self):
         return { request_types.GET : self.do_GET,
                  request_types.POST: self.do_POST,
