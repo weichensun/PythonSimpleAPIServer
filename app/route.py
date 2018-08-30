@@ -1,25 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# Route rules definition
-#
-# 1, In string
-#
-#   route["{REQUEST_PATH}"] = "{MODULE_PATH}/{CLASS_NAME}"
-#   route["{REQUEST_PATH}"] = "{MODULE_PATH}"
-#
-# 2, In array
-#
-#   route["{REQUEST_PATH}"] = ["{MODULE_PATH}", "{CLASS_NAME}"]
-#   route["{REQUEST_PATH}"] = ["{MODULE_PATH}"]
-#
-# If the class name is not supplied, the loader will find the class in the module
-#
+from _core.base_route import BaseRoute
 
-def get():
+class Route(BaseRoute):
 
-    route = {}
-    route['/']          = 'app.api.index/Index'
-    route['/task']      = ['app.api.task']
-
-    return route
+    def set_route(s):
+        s.add('/', 'app.api.index/Index')
+        s.add('/task', 'app.api.task')
+        s.add('/object/{id|n}', 'app.api.object')

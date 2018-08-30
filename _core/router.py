@@ -8,7 +8,7 @@ from _core.worker_loader import Worker_Loader
 
 class Router ():
 
-    class PathMatched():
+    class Match():
         def __init__(self, url_variables):
             self.url_variables = url_variables
 
@@ -20,12 +20,12 @@ class Router ():
         try:
             route = __import__('app.route', fromlist = ['app'])
             route = imp.reload(route)
-            route_rules = route.get()
+            route = route.Route()
 
-            for rule in route_rules.keys():
-                matched = self.match_rule_and_path(rule, path)
+            for route in route.route_list:
+                matched = self.match_pattern_and_path(route.pattern, path)
                 if matched:
-                    worker = self.load_worker(route_rules[path])
+                    worker = self.load_worker(route.worker_module_path)
                     break
 
         except ImportError:
@@ -33,7 +33,7 @@ class Router ():
 
         return worker
 
-    def match_rule_and_path(self, rule, path):
+    def match_pattern_and_path(self, rule, path):
         key_pattern = "{(\w*)}|{(\w*)\|[n,c]}"
         match_list = re.findall(key_pattern, rule)
 
@@ -58,7 +58,7 @@ class Router ():
             url_variables = {}
             if len(key_list) > 0:
                 url_variables = dict(zip(key_list, match.groups()))
-            return Router.PathMatched(url_variables)
+            return Router.Match(url_variables)
 
         return None
 
