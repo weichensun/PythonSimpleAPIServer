@@ -26,7 +26,13 @@ A simple http server framework base on Python BaseHTTPServer
 
 ### Add New Route
 
-	To set route, just need to modify app/route.py and specify route and worker
+To set route, just need to modify app/route.py and specify route and worker
+	
+to add a route we just simply add
+	
+	self.add({ROUTE}, {WORKER_MODULE})
+	
+under set_route method
 
 ### Route Settings
 
