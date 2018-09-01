@@ -22,6 +22,9 @@ class Http_Handler(BaseHTTPRequestHandler):
         self.router     = Router()
         self.processor  = Processor()
         self.duration   = 0
+#       For modify response header like Server: SimpleHTTP/0.6 Python/2.7.3
+#        self.server_version = ''
+#        self.sys_version = ''
         BaseHTTPRequestHandler.__init__(self, *args)
 
     def log_message(self, format, *args):
