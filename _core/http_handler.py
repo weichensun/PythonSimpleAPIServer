@@ -38,28 +38,11 @@ class Http_Handler(BaseHTTPRequestHandler):
         self.process(request_types.GET)
 
     def do_POST(self):
-        ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
-
-        post_data = None
-        form      = None
-
-        if ctype == 'text/plain':
-            post_data = self.rfile.read(int(self.headers.getheader('Content-Length')))
-        elif ctype == 'application/json':
-            post_data = json.loads(self.rfile.read(int(self.headers.getheader('Content-Length'))))
-        elif ctype == 'application/x-www-form-urlencoded':
-            length = int(self.headers.getheader('content-length'))
-            post_data = cgi.parse_qs(self.rfile.read(length), keep_blank_values = 1)
-        elif ctype == 'multipart/form-data':
-            form = cgi.FieldStorage(
-                fp=self.rfile,
-                headers=self.headers,
-                environ={ 'REQUEST_METHOD':'POST',
-                          'CONTENT_TYPE':self.headers['Content-Type']
-                }
-            )
-
-        self.process(request_types.POST)
+        content_len = int(self.headers.get('content-length', 0))
+        request_body = {}
+        request_body['type'] = self.headers.get('content-type')
+        request_body['data'] = self.rfile.read(content_len)
+        self.process(request_types.POST, request_body)
 
     def do_PUT(self):
         self.process(request_types.PUT)
@@ -67,7 +50,7 @@ class Http_Handler(BaseHTTPRequestHandler):
     def do_DELETE(self):
         self.process(request_types.DELETE)
 
-    def process(self, request_type):
+    def process(self, request_type, request_body = None):
         begin_time = time.time()
         # process url
         parsed_url      = urlparse(self.path)
@@ -81,7 +64,8 @@ class Http_Handler(BaseHTTPRequestHandler):
             self.write_response('{"status":404,"message":"NOT_FOUND"}')
         else:
             # Start worker
-            worker.set_input_data(self.get_input_data(request_type))
+            worker.set_request_body(request_body)
+            worker.set_request_headers(None)
             response = self.processor.process(request_type, worker)
             self.duration = (time.time() - begin_time) * 1000
             self.write_header(response['code'], response['content_type'])

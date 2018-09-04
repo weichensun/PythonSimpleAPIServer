@@ -9,3 +9,4 @@ class Route(BaseRoute):
         s.add('/', 'app.api.hello_world/HelloWorld')
         s.add('/task', 'app.api.task')
         s.add('/object/{id|n}', 'app.api.object')
+        s.add('/post', 'app.api.post')

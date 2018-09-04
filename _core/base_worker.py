@@ -13,8 +13,10 @@ class Base_Worker():
         self.content_type           = ''
         self.code                   = 0
 
-        # Input data
+        # Input data (New)
         self.route_parameters       = {}
+        self.request_body           = None
+        self.request_headers        = None
 
         # Input data
         self.headers                = None
@@ -42,8 +44,11 @@ class Base_Worker():
         self.code = 200
         return self.get_response()
 
-    def set_input_data(self, data):
-        self.data = data
+    def set_request_body(self, request_body):
+        self.request_body = request_body
+
+    def set_request_headers(self, request_headers):
+        self.request_headers = request_headers
 
     def set_route_parameters(self, route_parameters):
         self.route_parameters = route_parameters
@@ -68,16 +73,16 @@ class Base_Worker():
                  request_types.DELETE: self.do_DELETE }
 
     def do_GET( self ):
-        self.reply( '', 'text/plain', 405 )
+        return self.reply( '', 'text/plain', 405 )
 
     def do_POST( self ):
-        self.reply( '', 'text/plain', 405 )
+        return self.reply( '', 'text/plain', 405 )
 
     def do_PUT( self ):
-        self.reply( '', 'text/plain', 405 )
+        return self.reply( '', 'text/plain', 405 )
 
     def do_DELETE( self ):
-        self.reply( '', 'text/plain', 405 )
+        return self.reply( '', 'text/plain', 405 )
 
     def isstr(self, input):
         try:
