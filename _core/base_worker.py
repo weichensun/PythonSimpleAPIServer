@@ -18,7 +18,7 @@ class Base_Worker():
         self.request_body           = None
         self.request_headers        = None
 
-        # Input data
+        # Input data old
         self.headers                = None
         self.url_param              = ''
         self.request_type           = ''
@@ -35,7 +35,7 @@ class Base_Worker():
     def replyOK(self, message):
         if not self.isstr(message):
             message = self.dict_to_json(message)
-        self.message = message
+        self.message = message + '\n'
 
         if self.is_json(message):
             self.content_type = "application/json"
@@ -72,17 +72,17 @@ class Base_Worker():
                  request_types.PUT: self.do_PUT,
                  request_types.DELETE: self.do_DELETE }
 
-    def do_GET( self ):
-        return self.reply( '', 'text/plain', 405 )
+    def do_GET(self):
+        return self.reply('', 'text/plain', 405)
 
-    def do_POST( self ):
-        return self.reply( '', 'text/plain', 405 )
+    def do_POST(self):
+        return self.reply('', 'text/plain', 405)
 
-    def do_PUT( self ):
-        return self.reply( '', 'text/plain', 405 )
+    def do_PUT(self):
+        return self.reply('', 'text/plain', 405)
 
-    def do_DELETE( self ):
-        return self.reply( '', 'text/plain', 405 )
+    def do_DELETE(self):
+        return self.reply('', 'text/plain', 405)
 
     def isstr(self, input):
         try:
