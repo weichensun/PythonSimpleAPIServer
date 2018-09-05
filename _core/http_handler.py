@@ -11,6 +11,7 @@ else:
 
 import json
 import time
+import socket
 from _core import request_types
 from _core.router import Router
 from _core.processor import Processor
@@ -27,19 +28,13 @@ class Http_Handler(BaseHTTPRequestHandler):
 #        self.sys_version = ''
         BaseHTTPRequestHandler.__init__(self, *args)
 
-    def log_message(self, format, *args):
-        client_addr = self.headers.get('X-Forwarded-For')
-        if client_addr == None:
-            client_addr = self.client_address[0]
-        code = args[1]
-        request_info = args[0].split()
-        request_type = request_info[0]
-        request_path  = request_info[1]
-        Log.l("[REQUEST][%s][%s][%s][%s][%s][%.2f ms]" % (time.asctime(), client_addr, code, request_type, request_path, self.duration))
-
     def do_GET(self):
         self.process(request_types.GET)
 
+    # [This need to fix]
+    # Since we add this method
+    # For 501 cases client need to POST the entire data to know the server does not have that method
+    # And server recesive data that does not needed ...
     def do_POST(self):
         content_len = int(self.headers.get('content-length', 0))
         request_body = {}
@@ -91,3 +86,70 @@ class Http_Handler(BaseHTTPRequestHandler):
             self.wfile.write(str.encode(message))
         else:
             self.wfile.write(message)
+
+    ### Override BaseHTTPRequestHandler ###
+    def handle_one_request(self):
+        """Handle a single HTTP request.
+
+        You normally don't need to override this method; see the class
+        __doc__ string for information on how to handle specific HTTP
+        commands such as GET and POST.
+
+        """
+        try:
+            self.raw_requestline = self.rfile.readline(65537)
+            if len(self.raw_requestline) > 65536:
+                self.requestline = ''
+                self.request_version = ''
+                self.command = ''
+                self.send_error(414)
+                return
+            if not self.raw_requestline:
+                self.close_connection = 1
+                return
+            if not self.parse_request():
+                # An error code has been sent, just exit
+                return
+
+            worker = self
+            # Route self.path, find worker
+            # TO-DO
+
+            # if worker = None:
+            #   self.send_error(404, "Not found (%s)" % self.path)
+            #   return
+
+            # Check worker has method attr
+            mname = 'do_' + self.command
+            if not hasattr(worker, mname):
+                self.send_error(501, "Unsupported method (%r)" % self.command)
+                return
+            method = getattr(worker, mname)
+            method()
+            self.wfile.flush() #actually send the response if not already done.
+        except socket.timeout as e:
+            #a read or a write timed out.  Discard this connection
+            self.log_error("Request timed out: %r", e)
+            self.close_connection = 1
+            return
+
+    def log_request(self, code='-', size='-'):
+        client_addr = self.headers.get('X-Forwarded-For')
+        if client_addr == None:
+            client_addr = self.client_address[0]
+        Log.l("[RESPONSE][%s][%s][%s][%s][%s][%.2fms]" % (time.asctime(),
+                                                         client_addr,
+                                                         self.command,
+                                                         self.path,
+                                                         code,
+                                                         self.duration))
+
+    def log_error(self, format, *args):
+        client_addr = self.headers.get('X-Forwarded-For')
+        if client_addr == None:
+            client_addr = self.client_address[0]
+        Log.l("[ERROR][%s][%s][%s][%s][%s]" % (time.asctime(),
+                                           client_addr,
+                                           self.command,
+                                           self.path,
+                                           format%args))
