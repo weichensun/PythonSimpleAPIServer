@@ -9,6 +9,7 @@ import inspect
 
 class Worker_Loader:
 
+    @classmethod
     def load(self, module_path):
         worker = None
         try:

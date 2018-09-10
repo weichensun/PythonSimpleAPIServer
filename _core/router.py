@@ -3,18 +3,19 @@
 
 import imp
 import re
-from _core.base_worker import Base_Worker
 from _core.worker_loader import Worker_Loader
 
 class Router ():
+
 
     class Match():
         def __init__(self, route_parameters):
             self.route_parameters = route_parameters
 
-    def __init__(self):
-        self.worker_loader = Worker_Loader()
+#    def __init__(self):
+#        self.worker_loader = Worker_Loader()
 
+    @classmethod
     def get_worker_by_path(self, path):
         worker = None
         try:
@@ -25,7 +26,7 @@ class Router ():
             for route in route.route_list:
                 matched = self.match_pattern_and_path(route.pattern, path)
                 if matched:
-                    worker = self.worker_loader.load(route.worker_module_path)
+                    worker = Worker_Loader.load(route.worker_module_path)
                     worker.set_route_parameters(matched.route_parameters)
                     break
 
@@ -34,6 +35,7 @@ class Router ():
 
         return worker
 
+    @classmethod
     def match_pattern_and_path(self, rule, path):
         key_pattern = "{(\w*)}|{(\w*)\|[n,c]}"
         match_list = re.findall(key_pattern, rule)
