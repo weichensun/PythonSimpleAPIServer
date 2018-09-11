@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-
 if sys.version_info[0] < 3:
     from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 else:
@@ -58,6 +57,7 @@ if __name__ == '__main__':
 
     server_class = ThreadedHTTPServer
     httpd = server_class((HOST_NAME, PORT_NUMBER), Http_Handler)
+    httpd.allow_reuse_address = True
     if SSL_CERTIFICATE_PUBLIC_KEY_FILE != '' and SSL_CERTIFICATE_PRIVATE_KEY_FILE != '' :
         httpd.socket = ssl.wrap_socket(httpd.socket, keyfile=SSL_CERTIFICATE_PUBLIC_KEY_FILE,
                                         certfile=SSL_CERTIFICATE_PRIVATE_KEY_FILE, server_side=True)
@@ -72,5 +72,4 @@ if __name__ == '__main__':
 
     httpd.server_close()
     Log.l("[SERVER][%s][SERVER_STOP][%s][%s]" % (time.asctime(), HOST_NAME, PORT_NUMBER))
-
-
+    exit()
