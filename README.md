@@ -1,15 +1,18 @@
 ## About
 
-A simple http server framework base on Python BaseHTTPServer
+A small improved http server framework base on Python BaseHTTPServer
 
 #### Features
-	Support python2 and python3
-	Use threading to process requests (No blocking)
-	Support https
-	Include simple route
+	Working on python2 and python3
+	Use threading to process multiple requests (No blocking)
+	Support HTTPS
+	Use simple route to load worker
 	Dynamic load worker class
+	
+	[coming] compress response
 
-#### Support methods
+#### Support most of the HTTP methods
+	
 	GET	-
 	POST	-
 	PUT	-
@@ -19,8 +22,10 @@ A simple http server framework base on Python BaseHTTPServer
 #### Start Server
 	python server.py
 	
-#### Test Server
-	curl localhost:5000
+#### Connect to Server
+	$ curl localhost:5000
+
+	> HelloWorld!
 
 ## Route Settings
 
@@ -37,18 +42,26 @@ under def set_route(self) method
 ### Route Settings
 
 #### Route Parameters
-	
-Default
-	
+
+This framework supports route parameter. If you want to identify
+
+	e.g: /object/{id|n}
+	e.g: /object/{type}/{id|n}
+
+Default 
+
 	'/request/path/{VAR_NAME}'
+	e.g: /request/path/var_name_123
 
 Filter Number only
 
 	'/request/path/{VAR_NAME|n}'
+	e.g: /request/path/1234
 	
 Filter Charactor only
 
 	'/request/path/{VAR_NAME|c}'
+	e.g: /request/path/name
 
 
 #### Worker
