@@ -84,12 +84,12 @@ class Http_Handler(BaseHTTPRequestHandler):
                 self.send_error(501, "Unsupported method (%r)" % self.command)
                 return
 
-#            try:
-            method = getattr(worker, mname)
-            http_response = method()
-            self.write_response(http_response)
-#            except:
-#                self.send_error(500, "Something went wrong (-)")
+            try:
+                method = getattr(worker, mname)
+                http_response = method()
+                self.write_response(http_response)
+            except:
+                self.send_error(500, "Something went wrong (-)")
 
             self.wfile.flush() #actually send the response if not already done.
         except socket.timeout as e:
