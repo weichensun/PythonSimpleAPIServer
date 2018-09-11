@@ -10,3 +10,4 @@ class Route(BaseRoute):
         s.add('/task', 'app.api.task')
         s.add('/object/{id|n}', 'app.api.object')
         s.add('/post', 'app.api.post')
+        s.add('/image', 'app.api.image')

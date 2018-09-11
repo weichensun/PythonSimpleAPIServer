@@ -8,23 +8,11 @@ class HttpResponse:
         self.headers  = headers
         self.data = data
 
-    def addHeader(self, key, value):
-        self.header.append((key, value))
-
-    def setHeader(self, headers):
-        self.headers = headers
-
-    def setData(self, data):
-        self.data = data
-
-    def sefErrorCode(self, error_code):
-        self.error_code = error_code
-
-    def getData(self):
+    def get_data(self):
         return self.data
 
-    def getHeaders(self):
+    def get_headers(self):
         return self.headers
 
-    def getErrorCode(self):
+    def get_error_code(self):
         return self.error_code

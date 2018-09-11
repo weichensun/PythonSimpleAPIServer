@@ -33,14 +33,16 @@ class Http_Handler(BaseHTTPRequestHandler):
 
     def write_response(self, response):
 
-        self.send_response(response.getErrorCode())
-        for header in response.getHeaders():
+        self.send_response(response.get_error_code())
+        for header in response.get_headers():
             self.send_header(header[0], header[1])
         self.end_headers()
-        data = response.getData()
-        if type(data) is str:
+        data = response.get_data()
+
+        if type(data) is str and sys.version_info[0] >= 3:
             self.wfile.write(str.encode(data))
         else:
+            # For python 2 and python 3 byte data
             self.wfile.write(data)
 
         # Close for python version < 3
