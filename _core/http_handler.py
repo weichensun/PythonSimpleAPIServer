@@ -12,105 +12,41 @@ else:
 import json
 import time
 import socket
-from _core import request_types
 from _core.router import Router
-from _core.processor import Processor
+from _core.http_response import HttpResponse
 from _core.log import Log
 
 class Http_Handler(BaseHTTPRequestHandler):
 
     def __init__(self, *args):
-        self.processor  = Processor()
         self.duration   = 0
-#       For modify response header like Server: SimpleHTTP/0.6 Python/2.7.3
-#        self.server_version = ''
-#        self.sys_version = ''
+        # For modify response header like Server: SimpleHTTP/0.6 Python/2.7.3
+        # self.server_version = ''
+        # self.sys_version = ''
         BaseHTTPRequestHandler.__init__(self, *args)
 
-    def get_processor(self, path):
+    def get_worker(self, path):
         worker = Router.get_worker_by_path(urlparse(self.path).path)
         if worker != None:
-            worker.set_handler(self)
-
+            worker.set_request_handler(self)
         return worker
 
-#    def do_GET(self):
-#        self.process(request_types.GET)
+    def write_response(self, response):
 
-    # [This need to fix]
-    # Since we add this method
-    # For 501 cases client need to POST the entire data to know the server does not have that method
-    # And server recesive data that does not needed ...
-#    def do_POST(self):
-#        content_len = int(self.headers.get('content-length', 0))
-#        request_body = {}
-#        request_body['type'] = self.headers.get('content-type')
-#        request_body['data'] = self.rfile.read(content_len)
-#        self.process(request_types.POST, request_body)
-
-#    def do_PUT(self):
-#        self.process(request_types.PUT)
-
-#    def do_DELETE(self):
-#        self.process(request_types.DELETE)
-
-#    def process(self, request_type, request_body = None):
-#        begin_time = time.time()
-#        # process url
-#        parsed_url      = urlparse(self.path)
-#        resource_path   = parsed_url.path
-#        url_query       = parsed_url.query
-
-#        # get worker
-#        worker = self.router.get_worker_by_path(resource_path)
-#        if worker == None:
-#            self.write_header(404, 'application/json')
-#            self.write_response('{"status":404,"message":"NOT_FOUND"}')
-#        else:
-#            # Start worker
-#            worker.set_request_body(request_body)
-#            worker.set_request_headers(None)
-#            response = self.processor.process(request_type, worker)
-#            self.duration = (time.time() - begin_time) * 1000
-#            self.write_header(response['code'], response['content_type'])
-#            self.write_response(response['message'])
-
-        # close wfile for python2.x
-#        if sys.version_info[0] < 3:
-#            self.wfile.close()
-
-#    def get_input_data(self, request_type):
-#        return None
-
-    def write_result(self, result):
-
-        ### Mock Response
-        result = {
-            'errorCode': 200,
-            'message': "OK",
-            'headers': [
-                ("Content-type","text/html"),
-            ]
-        }
-
-        self.send_response(result['errorCode'])
-        for header in result['headers']:
+        self.send_response(response.getErrorCode())
+        for header in response.getHeaders():
             self.send_header(header[0], header[1])
         self.end_headers()
-
-        if type(result['message']) is str:
-            self.wfile.write(str.encode(result['message']))
+        data = response.getData()
+        if type(data) is str:
+            self.wfile.write(str.encode(data))
         else:
-            self.wfile.write(result['message'])
+            self.wfile.write(data)
 
+        # Close for python version < 3
         if sys.version_info[0] < 3:
             self.wfile.close()
 
-#    def write_response(self, message):
-#        if type(message) is str:
-#            self.wfile.write(str.encode(message))
-#        else:
-#            self.wfile.write(message)
 
     ### Override BaseHTTPRequestHandler ###
     def handle_one_request(self):
@@ -136,8 +72,8 @@ class Http_Handler(BaseHTTPRequestHandler):
                 # An error code has been sent, just exit
                 return
 
-            worker = self.get_processor(self.path)
-
+            ### Custom add route to get worker
+            worker = self.get_worker(self.path)
             if worker == None:
                self.send_error(404, "Not found (%s)" % self.path)
                return
@@ -147,9 +83,14 @@ class Http_Handler(BaseHTTPRequestHandler):
             if not hasattr(worker, mname):
                 self.send_error(501, "Unsupported method (%r)" % self.command)
                 return
+
+#            try:
             method = getattr(worker, mname)
-            result = method()
-            self.write_result(result)
+            http_response = method()
+            self.write_response(http_response)
+#            except:
+#                self.send_error(500, "Something went wrong (-)")
+
             self.wfile.flush() #actually send the response if not already done.
         except socket.timeout as e:
             #a read or a write timed out.  Discard this connection

@@ -3,7 +3,7 @@
 
 import imp
 import re
-from _core.worker_loader import Worker_Loader
+from _core.worker_loader import WorkerLoader
 
 class Router ():
 
@@ -11,9 +11,6 @@ class Router ():
     class Match():
         def __init__(self, route_parameters):
             self.route_parameters = route_parameters
-
-#    def __init__(self):
-#        self.worker_loader = Worker_Loader()
 
     @classmethod
     def get_worker_by_path(self, path):
@@ -26,7 +23,7 @@ class Router ():
             for route in route.route_list:
                 matched = self.match_pattern_and_path(route.pattern, path)
                 if matched:
-                    worker = Worker_Loader.load(route.worker_module_path)
+                    worker = WorkerLoader.load(route.worker_module_path)
                     worker.set_route_parameters(matched.route_parameters)
                     break
 
@@ -50,9 +47,9 @@ class Router ():
                 key_list.append("VAR_" + str(idx))
 
         if len(key_list) > 0:
-            rule = re.sub("{\w*}", "([\'\.\*\w+!(),\-\$\%]+)", rule)
-            rule = re.sub("{\w*\|n}", "(\d+)", rule)
-            rule = re.sub("{\w*\|c}", "([a-zA-Z]+)", rule)
+            rule = re.sub("{\\w*}", r"([\\'\\.\\*\\w+!(),\\-\\$\\%]+)", rule)
+            rule = re.sub("{\\w*\\|n}", r"(\\d+)", rule)
+            rule = re.sub("{\\w*\\|c}", r"([a-zA-Z]+)", rule)
 
         rule = "^" + rule + '$'
 

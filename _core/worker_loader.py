@@ -1,13 +1,13 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from _core.base_worker import Base_Worker
+from _core.base_worker import BaseWorker
 import re
 import imp
 import sys
 import inspect
 
-class Worker_Loader:
+class WorkerLoader:
 
     @classmethod
     def load(self, module_path):
@@ -26,11 +26,11 @@ class Worker_Loader:
 
             if class_name != '':
                 obj = getattr(module, class_name)
-                if issubclass(obj, Base_Worker):
+                if issubclass(obj, BaseWorker):
                     worker = obj
             else:
                 for name, obj in inspect.getmembers(module, inspect.isclass):
-                    if name != Base_Worker.__name__ and issubclass(obj, Base_Worker):
+                    if name != BaseWorker.__name__ and issubclass(obj, BaseWorker):
                         worker = obj
                         break
             if worker != None:

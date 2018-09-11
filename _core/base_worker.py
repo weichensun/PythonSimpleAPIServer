@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import json
+from _core.http_response import HttpResponse
 
-from _core import request_types
+class BaseWorker():
 
-class Base_Worker():
-
-    def __init__( self ):
+    def __init__(self):
         # For reply data
         self.message                = ''
         self.content_type           = ''
@@ -15,7 +14,7 @@ class Base_Worker():
 
         # Hander
         # Ask handler for data
-        self.hander                 = None
+        self.request_hander         = None
 
         # Input data (New)
         self.route_parameters       = {}
@@ -23,41 +22,29 @@ class Base_Worker():
         self.request_headers        = None
 
         # Input data old
-        self.headers                = None
-        self.url_param              = ''
-        self.request_type           = ''
-        self.path                   = ''
-        self.post_data              = None
-        self.form                   = None
+#        self.headers                = None
+#        self.url_param              = ''
+#        self.request_type           = ''
+#        self.path                   = ''
+#        self.post_data              = None
+#        self.form                   = None
 
-    def set_handler(self, handler):
-        self.handler = handler
-
-#    def build_response(self):
-#        response = {}
-
-#    def replyFile(self, file_path):
-
-
-    def replyError(self, code, message):
-        self.message = message
-        self.content_type = content_type
-        self.code = code
-#        return self.get_response()
+    def set_request_handler(self, handler):
+        self.request_handler = handler
 
     def replyOK(self, message):
-        if not self.isstr(message):
-            message = self.dict_to_json(message)
-        self.message = message + '\n'
-
-        if self.is_json(message):
-            self.content_type = "application/json"
+        content_type = 'text/plain; charset=utf-8'
+        if type(message) in [dict, list]:
+            message = json.dumps(message)
+            content_type = 'application/json'
         else:
-            self.content_type = "text/plain"
-        self.code = 200
-#        return self.get_response()
+            try:
+                json.loads(message)
+                content_type = 'application/json'
+            except ValueError:
+                pass
 
-
+        return HttpResponse(200, headers=[], data=message)
 
     def set_request_body(self, request_body):
         self.request_body = request_body
@@ -68,36 +55,8 @@ class Base_Worker():
     def set_route_parameters(self, route_parameters):
         self.route_parameters = route_parameters
 
-    def route_parameter(self, key):
+    def get_route_parameter(self, key, default=''):
         if key in self.route_parameters:
             return self.route_parameters[key]
-        return ''
+        return default
 
-#    def get_response(self):
-#        response = {}
-#        response['code']            = self.code
-#        response['content_type']    = self.content_type
-#        response['message']         = self.message
-#        return response
-
-    def isstr(self, input):
-        try:
-            return isinstance(input, basestring) # For python2
-        except NameError:
-            return isinstance(input, str) # For python 3
-
-    def is_json(self, input):
-        if not self.isstr(input):
-            return False
-        try:
-            json.loads(input)
-        except ValueError:
-            return False
-        return True
-
-    def dict_to_json(self, input):
-        try:
-            return json.dumps(input)
-        except:
-            Log.le("Cannot parse to JSON")
-            return str(input)

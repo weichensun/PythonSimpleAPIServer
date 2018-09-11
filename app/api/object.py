@@ -1,9 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from _core.base_worker import Base_Worker
+from _core.base_worker import BaseWorker
 
-class Object(Base_Worker):
+class Object(BaseWorker):
 
     def do_GET(self):
-        return self.replyOK("The object id is %s." % self.route_parameter("id"))
+        return self.replyOK("The object id is %s." % self.get_route_parameter("id"))
