@@ -19,8 +19,7 @@ from _core.router import Router
 from _core.http_handler import Http_Handler
 from _core.log import Log
 
-# Settings
-#
+# Host Settings
 HOST_NAME = '0.0.0.0'
 PORT_NUMBER = 5000 # change below 1024 will need sudo permission
 
@@ -59,11 +58,7 @@ class SigTerm(SystemExit): pass
 def sigterm(sig,frm): raise SigTerm
 signal.signal(15,sigterm)
 
-#def final_sub():
-#    Log.l("[SERVER][%s][SERVER_KILLED][%s][%s]" % (time.asctime(), HOST_NAME, PORT_NUMBER))
-
 # Main
-#
 if __name__ == '__main__':
 
     pid = os.getpid()
