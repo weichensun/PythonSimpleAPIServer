@@ -7,6 +7,7 @@ if sys.version_info[0] < 3:
 else:
     from http.server import BaseHTTPRequestHandler, HTTPServer
 
+import os
 import traceback
 import threading
 import resource
@@ -42,19 +43,30 @@ class ThreadedHTTPServer(HTTPServer):
     def __new_request(self, handlerClass, request, address, server):
         try:
             handlerClass(request, address, server)
-            self.shutdown_request(request)
         except socket.error as e:
             if e.errno != errno.EPIPE:
                 raise
-            Log.l("Client disconnected ...")
+            Log.l("[SERVER][CLIENT_DISCONNECTED]")
             Log.l(traceback.extract_stack())
             Log.l(e)
             pass
+        finally:
+            self.shutdown_request(request)
+
+
+import signal
+class SigTerm(SystemExit): pass
+def sigterm(sig,frm): raise SigTerm
+signal.signal(15,sigterm)
+
+#def final_sub():
+#    Log.l("[SERVER][%s][SERVER_KILLED][%s][%s]" % (time.asctime(), HOST_NAME, PORT_NUMBER))
 
 # Main
 #
 if __name__ == '__main__':
 
+    pid = os.getpid()
     server_class = ThreadedHTTPServer
     httpd = server_class((HOST_NAME, PORT_NUMBER), Http_Handler)
     httpd.allow_reuse_address = True
@@ -62,14 +74,15 @@ if __name__ == '__main__':
         httpd.socket = ssl.wrap_socket(httpd.socket, keyfile=SSL_CERTIFICATE_PUBLIC_KEY_FILE,
                                         certfile=SSL_CERTIFICATE_PRIVATE_KEY_FILE, server_side=True)
 
-    Log.l("[SERVER][%s][SERVER_START][%s][%s]" % (time.asctime(), HOST_NAME, PORT_NUMBER))
+    Log.l("[SERVER][PID][%s]" % pid)
     try:
+        Log.l("[SERVER][%s][SERVER_START][%s][%s]" % (time.asctime(), HOST_NAME, PORT_NUMBER))
         httpd.serve_forever()
     except KeyboardInterrupt:
         pass
     except Exception:
         pass
-
-    httpd.server_close()
-    Log.l("[SERVER][%s][SERVER_STOP][%s][%s]" % (time.asctime(), HOST_NAME, PORT_NUMBER))
-    exit()
+    finally:
+        httpd.server_close()
+        Log.l("[SERVER][%s][SERVER_STOPPED][%s][%s]" % (time.asctime(), HOST_NAME, PORT_NUMBER))
+        exit(0)
