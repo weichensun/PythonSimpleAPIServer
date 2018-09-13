@@ -81,4 +81,4 @@ class BaseWorker():
         self.response_headers.append((header, value))
 
     def check_authorization(self):
-        return False
+        return True
