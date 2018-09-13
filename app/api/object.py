@@ -1,9 +1,9 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from _core.base_worker import BaseWorker
+from _core.http_worker import HttpWorker
 
-class Object(BaseWorker):
+class Object(HttpWorker):
 
     def do_GET(self):
         return self.replyOK("The object id is %s." % self.get_route_parameter("id"))

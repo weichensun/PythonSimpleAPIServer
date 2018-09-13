@@ -12,7 +12,7 @@ else:
 import json
 import time
 import socket
-from _core.router import Router
+from _core.http_router import HttpRouter
 from _core.log import Log
 import _core.exceptions as Execptions
 
@@ -26,7 +26,7 @@ class Http_Handler(BaseHTTPRequestHandler):
         BaseHTTPRequestHandler.__init__(self, *args)
 
     def get_worker(self, path):
-        return Router.get_worker_by_path(urlparse(self.path).path, self)
+        return HttpRouter.get_worker_by_path(urlparse(self.path).path, self)
 
     def write_response(self, response):
 

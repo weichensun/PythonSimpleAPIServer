@@ -15,7 +15,6 @@ import json
 import time
 import ssl
 import cgi
-from _core.router import Router
 from _core.http_handler import Http_Handler
 from _core.log import Log
 

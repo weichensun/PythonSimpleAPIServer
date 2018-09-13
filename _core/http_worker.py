@@ -7,7 +7,7 @@ import os.path
 import _core.exceptions as Execptions
 from _core.http_response import HttpResponse
 
-class BaseWorker():
+class HttpWorker():
 
     def __init__(self, route_parameters, request_headers):
 

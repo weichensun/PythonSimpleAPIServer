@@ -1,10 +1,10 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from _core.base_worker import BaseWorker
+from _core.http_worker import HttpWorker
 import time
 
-class Task(BaseWorker):
+class Task(HttpWorker):
 
     def do_GET(self):
         # We use ThreadedHTTPServer
