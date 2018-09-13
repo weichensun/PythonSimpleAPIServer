@@ -13,8 +13,8 @@ import json
 import time
 import socket
 from _core.router import Router
-from _core.http_response import HttpResponse
 from _core.log import Log
+import _core.exceptions as Execptions
 
 class Http_Handler(BaseHTTPRequestHandler):
 
@@ -26,10 +26,7 @@ class Http_Handler(BaseHTTPRequestHandler):
         BaseHTTPRequestHandler.__init__(self, *args)
 
     def get_worker(self, path):
-        worker = Router.get_worker_by_path(urlparse(self.path).path)
-        if worker != None:
-            worker.set_request_handler(self)
-        return worker
+        return Router.get_worker_by_path(urlparse(self.path).path, self)
 
     def write_response(self, response):
 
@@ -75,25 +72,35 @@ class Http_Handler(BaseHTTPRequestHandler):
                 return
 
             ### Custom add route to get worker
-            worker = self.get_worker(self.path)
-            if worker == None:
-               self.send_error(404, "Not found (%s)" % self.path)
-               return
+            try:
+                worker = self.get_worker(self.path)
+                if worker == None:
+                   self.send_error(404, "Not found (%s)" % self.path)
+                   return
+            except Execptions.Unauthorized:
+                self.send_error(401, "Unauthorized")
+                return
 
             # Check worker has method attr
             mname = 'do_' + self.command
             if not hasattr(worker, mname):
                 self.send_error(501, "Unsupported method (%r)" % self.command)
                 return
-
             try:
                 method = getattr(worker, mname)
                 http_response = method()
                 self.write_response(http_response)
+            except Execptions.Forbidden:
+                self.send_error(403, "Forbidden")
+            except Execptions.NotFound:
+                self.send_error(404, "Not found (%s)" % self.path)
+            except Execptions.BadRequest:
+                self.send_error(400, "Bad Request")
             except:
                 self.send_error(500, "Something went wrong (-)")
+            finally:
+                self.wfile.flush() #actually send the response if not already done.
 
-            self.wfile.flush() #actually send the response if not already done.
         except socket.timeout as e:
             #a read or a write timed out.  Discard this connection
             self.log_error("Request timed out: %r", e)

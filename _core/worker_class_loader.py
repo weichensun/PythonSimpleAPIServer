@@ -7,7 +7,7 @@ import imp
 import sys
 import inspect
 
-class WorkerLoader:
+class WorkerClassLoader:
 
     @classmethod
     def load(self, module_path):
@@ -33,8 +33,8 @@ class WorkerLoader:
                     if name != BaseWorker.__name__ and issubclass(obj, BaseWorker):
                         worker = obj
                         break
-            if worker != None:
-                worker = worker()
+#            if worker != None:
+#                worker = worker
 
         except:
             print(sys.exc_info())

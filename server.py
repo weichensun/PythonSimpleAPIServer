@@ -52,7 +52,7 @@ class ThreadedHTTPServer(HTTPServer):
         finally:
             self.shutdown_request(request)
 
-
+# let program log exit message after, kill command
 import signal
 class SigTerm(SystemExit): pass
 def sigterm(sig,frm): raise SigTerm

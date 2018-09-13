@@ -3,17 +3,16 @@
 
 import imp
 import re
-from _core.worker_loader import WorkerLoader
+from _core.worker_class_loader import WorkerClassLoader
 
-class Router ():
-
+class Router():
 
     class Match():
         def __init__(self, route_parameters):
             self.route_parameters = route_parameters
 
     @classmethod
-    def get_worker_by_path(self, path):
+    def get_worker_by_path(self, path, request_handler):
         worker = None
         try:
             route = __import__('app.route', fromlist = ['app'])
@@ -23,8 +22,8 @@ class Router ():
             for route in route.route_list:
                 matched = self.match_pattern_and_path(route.pattern, path)
                 if matched:
-                    worker = WorkerLoader.load(route.worker_module_path)
-                    worker.set_route_parameters(matched.route_parameters)
+                    worker_class = WorkerClassLoader.load(route.worker_module_path)
+                    worker = worker_class(matched.route_parameters, request_handler)
                     break
 
         except ImportError:
