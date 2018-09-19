@@ -3,21 +3,22 @@
 
 import json
 import mimetypes
+import cgi
 import os.path
 import _core.exceptions as Execptions
 from _core.http_response import HttpResponse
 
 class HttpWorker():
 
-    def __init__(self, route_parameters, request_headers):
+    def __init__(self, route_parameters, request_handler):
 
         # Hander
         # We store handler here, so we can ask handler for more data
-        self.request_hander         = request_headers
+        self.request_handler         = request_handler
 
         # Input data (New)
         self.route_parameters       = route_parameters
-        self.request_headers        = request_headers.headers
+        self.request_headers        = request_handler.headers
         self.request_body           = ''
 
         # Output data
@@ -35,11 +36,37 @@ class HttpWorker():
             return self.route_parameters[key]
         return default
 
+    def get_request_headers(self):
+        return self.request_headers
+
     def get_request_header(self, key, default=None):
         header = self.request_headers.get(key)
         if header != None:
             return header
         return default
+
+    def get_post_data(self):
+        content_length = int(self.get_request_header('Content-Length', 0))
+        if content_length == 0:
+            return ''
+
+        content_type = self.get_request_header('Content-Type', '')
+        if content_type == '':
+            return ''
+
+        ctype, pdict = cgi.parse_header(content_type)
+
+        if ctype == 'multipart/form-data':
+#            fields = cgi.parse_multipart(self.request_handler.rfile, pdict)
+#            print fields
+#            messagecontent = fields.get('upload_file')
+            return ''
+
+#        if ctype == 'application/x-www-form-urlencoded':
+#            return ''
+
+        return self.request_handler.rfile.read(content_length)
+
 
     #
     # Functions for response
