@@ -6,5 +6,5 @@ from _core.http_worker import HttpWorker
 class Post(HttpWorker):
 
     def do_POST(self):
-        print(self.get_post_data())
+        print(self.get_request_body())
         return self.replyOK("OK")

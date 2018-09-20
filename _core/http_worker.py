@@ -19,7 +19,6 @@ class HttpWorker():
         # Input data (New)
         self.route_parameters       = route_parameters
         self.request_headers        = request_handler.headers
-        self.request_body           = ''
 
         # Output data
         self.response_headers       = []
@@ -45,28 +44,67 @@ class HttpWorker():
             return header
         return default
 
-    def get_post_data(self):
+    def get_request_body(self):
         content_length = int(self.get_request_header('Content-Length', 0))
+
         if content_length == 0:
-            return ''
+            return None
 
         content_type = self.get_request_header('Content-Type', '')
         if content_type == '':
-            return ''
+            return None
 
         ctype, pdict = cgi.parse_header(content_type)
 
         if ctype == 'multipart/form-data':
-#            fields = cgi.parse_multipart(self.request_handler.rfile, pdict)
-#            print fields
-#            messagecontent = fields.get('upload_file')
-            return ''
+            result = None
+            form = cgi.FieldStorage(fp=self.request_handler.rfile,
+                                    headers=self.request_handler.headers,
+                                    environ={
+                                        'REQUEST_METHOD':self.request_handler.command,
+                                        'CONTENT_TYPE':content_type
+                                    })
 
+            # Parse data to dict
+            for key in form:
+                payload = form[key]
+                if type(payload) is list:
+                    for item in payload:
+                        if result:
+                            data = {}
+                            data['file_name'] = item.filename
+                            data['name'] = item.name
+                            data['content'] = item.value
+                            result.append(data)
+                        else:
+                            result= []
+                            data = {}
+                            data['file_name'] = item.filename
+                            data['name'] = item.name
+                            data['content'] = item.value
+                            result.append(data)
+                else:
+                    if result:
+                        data = {}
+                        data['file_name'] = payload.filename
+                        data['name'] = payload.name
+                        data['content'] = payload.value
+                        result.append(data)
+                    else:
+                        result= []
+                        data = {}
+                        data['file_name'] = payload.filename
+                        data['name'] = payload.name
+                        data['content'] = payload.value
+                        result.append(data)
+
+            return result
+
+        # application/x-www-form-urlencoded can be complex ...
 #        if ctype == 'application/x-www-form-urlencoded':
 #            return ''
 
         return self.request_handler.rfile.read(content_length)
-
 
     #
     # Functions for response

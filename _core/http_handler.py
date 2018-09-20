@@ -12,6 +12,7 @@ else:
 import json
 import time
 import socket
+import traceback
 from _core.http_router import HttpRouter
 from _core.log import Log
 import _core.exceptions as Execptions
@@ -96,7 +97,9 @@ class Http_Handler(BaseHTTPRequestHandler):
                 self.send_error(404, "Not found (%s)" % self.path)
             except Execptions.BadRequest:
                 self.send_error(400, "Bad Request")
-            except:
+            except Exception as e:
+                err_log = str(e) + "\n\n" + traceback.format_exc()
+                Log.l(err_log)
                 self.send_error(500, "Something went wrong (-)")
             finally:
                 self.wfile.flush() #actually send the response if not already done.
