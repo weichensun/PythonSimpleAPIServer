@@ -43,24 +43,5 @@ server.run(threading=True, debug=True)
 ```
 
 ## More Tutorial and Codes
-* Server Functions
-    * Setup Routing
-    * Run with Threading
-    * SSL Setup
-    * Debug
-    * Middleware
-* Worker Functions
-    * Get Request Data
-        * Read Request Header
-        * Read Request URL Param
-        * Read POST Data/File
-    * Set Responses Data
-        * Set Reply Data
-        * Set Reply Headers
-        * Set Reply File
-
-
-## Story with Python's BaseHTTPServer
-
 More see: [Wiki](https://github.com/weichensun/SimplePythonHttpServer/wiki)
 	
