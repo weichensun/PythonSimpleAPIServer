@@ -99,39 +99,6 @@ class HTTPHandler(BaseHTTPRequestHandler):
         self.send_response(code)
         self.end_headers()
 
-#        try:
-#            short, long = self.responses[code]
-#        except KeyError:
-#            short, long = '???', '???'
-#        if message is None:
-#            message = short
-#        explain = long
-#        self.log_error("code %d, message %s", code, message)
-#        self.send_response(code, message)
-#        self.send_header('Connection', 'close')
-
-        # Message body is omitted for cases described in:
-        #  - RFC7230: 3.3. 1xx, 204(No Content), 304(Not Modified)
-        #  - RFC7231: 6.3.6. 205(Reset Content)
-#        content = None
-#        if code >= 200 and code not in (204, 205, 304):
-#            content = "ERROR"
-            # HTML encode to prevent Cross Site Scripting attacks
-            # (see bug #1100201)
-#            content = (self.error_message_format % {
-#                'code': code,
-#                'message': _quote_html(message),
-#                'explain': explain
-#            })
-#            self.send_header("Content-Type", self.error_content_type)
-#        self.end_headers()
-
-#        print("=========================")
-#        print(message)
- #       if self.debug:
-#        self.wfile.write(' ')
-#            return
-
         if self.debug and self.command != 'HEAD' and message:
             if type(message) is str:
                 self.wfile.write(message.encode('utf-8'))
