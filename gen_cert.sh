@@ -2,7 +2,7 @@
 
 # ================================================================
 #
-# A quick script for generating self signed certificate 
+# A quick script for generating self signed certificate to "./cert/"
 #
 # ================================================================
 
