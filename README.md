@@ -1,8 +1,10 @@
-# About
+# New SimplePythonHttpServer
 
 This project is base on pure Python's BaseHTTPServer, to minimize dependency
 
-Below will be the spec of the newer version of SimplePythonHttpServer
+Override and Modify Python's BaseHTTPServer, BaseHTTPRequestHandler, and ThreadingHTTPServer classes
+
+And add some extra classes
 
 ## Features
 1. Working on python2.7 and up to python3.7
