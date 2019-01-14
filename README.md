@@ -1,86 +1,66 @@
-## About
+# About
 
-A small improved http server framework base on Python BaseHTTPServer
+This project is base on pure Python's BaseHTTPServer, to minimize dependency
 
-#### Features
-	Working on python2 and python3
-	Use threading to process multiple requests (No blocking)
-	Support HTTPS
-	Specific worker by URL path
-	URL path variable
-	Dynamic load worker class
-	
-	[coming] compress response
+Below will be the spec of the newer version of SimplePythonHttpServer
 
-#### Support most of the HTTP methods
-	
-	GET	-
-	POST	-
-	PUT	-
-	DELETE	-
-
-## Quick Start:
-#### Start Server
-	python server.py
-	
-#### Connect to Server
-	$ curl localhost:5000
-
-	> HelloWorld!
-
-## Route Settings
-
-### Add New Route
-
-To set route, just need to modify app/route.py and specify route and worker
-	
-To add a route, just simply add
-	
-	self.add({ROUTE}, {WORKER_MODULE})
-	
-under def set_route(self) method
-
-### Route Parameters
-
-This framework supports route parameter. If you want to identify
-
-	e.g: /object/{id|n}
-	
-	e.g: /object/{type}/{id|n}
-
-Default 
-
-	'/request/path/{VAR_NAME}'
-	
-	e.g: /request/path/var_name_123
-
-Filter Number only
-
-	'/request/path/{VAR_NAME|n}'
-	
-	e.g: /request/path/1234
-	
-Filter Charactor only
-
-	'/request/path/{VAR_NAME|c}'
-	
-	e.g: /request/path/name
+## Features
+1. Working on python2.7 and up to python3.7
+2. Use threading to process multiple requests (No blocking)
+3. Support HTTPS
+4. Use worker class make service more dynamic
+5. URL path variable
+6. Global Middleware support
+7. ~~Dynamic load worker class~~ *
+8. ~~Dynamic add route path~~
 
 
-#### Worker
+## Sample Code
 
-The worker definition
+```python
+from server import Server
+from server.worker import Worker
 
-	{WORKER_MODULE_PATH}(/{WORKER_CLASS_NAME})
 
-Supply module path and class name (class name is optional)
 
-	'app.api.index/Index'
+class HelloWorker(Worker):
+    def do_GET(self):
+        return self.responseOK("HelloWorld !")
 
-So, if only module path is supplied like
 
-	'app.api.index'
 
-The loader will automatically load the first worker class under the module
-	
+class ObjectWorker(Worker):
+    def do_GET(self):
+        object_id = self.route_params['id']
+        return self.responseOK("Object id = %s" % object_id)
+
+
+
+server = Server()
+server.add_worker("/", HelloWorker)
+server.add_worker("/object/{id}", ObjectWorker)
+server.run(threading=True, debug=True)
+```
+
+## More Tutorial and Codes
+* Server Functions
+    * Setup Routing
+    * Run with Threading
+    * SSL Setup
+    * Debug
+    * Middleware
+* Worker Functions
+    * Get Request Data
+        * Read Request Header
+        * Read Request URL Param
+        * Read POST Data/File
+    * Set Responses Data
+        * Set Reply Data
+        * Set Reply Headers
+        * Set Reply File
+
+
+## Story with Python's BaseHTTPServer
+
+More see: [Wiki](https://github.com/weichensun/SimplePythonHttpServer/wiki)
 	
