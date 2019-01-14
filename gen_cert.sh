@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# ================================================================
+#
+# A quick script for generating self signed certificate 
+#
+# ================================================================
+
 # 2 letter ISO country code
 C="US"
 
