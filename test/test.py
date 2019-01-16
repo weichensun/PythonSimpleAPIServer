@@ -13,7 +13,7 @@ class HelloWorker(Worker):
         return self.responseOK("HelloWorld !")
 
     def do_POST(self):
-        data = self.get_request_body()
+        data = self.getRequestBody()
         return self.responseOK(data)
 
 class ObjectWorker(Worker):
@@ -25,9 +25,13 @@ class FileWorker(Worker):
     def do_GET(self):
         return self.responseFile('./image/lenna.png')
 
+class NoFileWorker(Worker):
+    def do_GET(self):
+        return self.responseFile('./image/noimg.png')
 
 server = Server()
 server.add_worker("/", HelloWorker)
 server.add_worker("/object/{id}", ObjectWorker)
 server.add_worker("/image", FileWorker)
+server.add_worker("/ni", NoFileWorker)
 server.run(threading=True, debug=True)

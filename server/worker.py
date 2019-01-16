@@ -20,50 +20,39 @@ class Worker():
         self.url_query_str   = url_query_str
         self.url_query       = dict()
 
-        # Response data
-        self.response_headers = []
 
-    def _send_code_and_header(self, code):
-        self.http_handler.send_response(200)
+    def debug(self, message):
+        self.http_handler.send_debug_message(message + "\n")
 
-        for headers in self.response_headers:
-            self.http_handler.send_header(header[0], header[1])
-        self.http_handler.end_headers()
 
-    def _send_message(self, message):
-        if message:
-            if type(message) is str:
-                self.http_handler.wfile.write(message.encode('utf-8'))
-            else:
-                self.http_handler.wfile.write(message)
+    def addResponseHeader(self, header, value):
+        self.http_handler.response_headers[header] = value
+
+
+    def responseOK(self, message, debug_message=''):
+        self.http_handler.send_message(200, message, debug_message)
+
+
+    def responseError(self, error_code, message='', debug_message=''):
+        self.http_handler.send_error(error_code, message, debug_message)
+
 
     def responseFile(self, file_path, block_size=2048):
         mime_type = mimetypes.guess_type(file_path)[0]
         size      = os.stat(file_path).st_size
 
         with open(file_path, 'rb') as f:
-            self._send_code_and_header(200)
+            self.http_handler.send_headers(200)
             while True:
                 data = f.read(block_size)
                 if data:
-                    self.http_handler.wfile.write(data)
+                    self.http_handler.send_data(data)
                 else:
                     break
         f.closed
 
 
-    def responseOK(self, message):
-        self._send_code_and_header(200)
-        self._send_message(message)
-
-    def responseError(self, error_code, message=''):
-        self._send_code_and_header(error_code)
-        self._send_message(message)
-
-    def add_response_header(self, header, value):
-        self.response_headers.append((header, value))
-
-    def get_request_body(self):
+    def getRequestBody(self):
         content_length = int(self.request_headers.get('Content-Length', 0))
         if content_length == 0:
             return None
