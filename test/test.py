@@ -5,7 +5,6 @@ import sys
 sys.path.insert(0, './../')
 
 from server import Server
-from server.router import Route, Router
 from server.worker import Worker
 
 class HelloWorker(Worker):

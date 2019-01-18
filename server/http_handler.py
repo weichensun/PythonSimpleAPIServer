@@ -119,10 +119,11 @@ class HTTPHandler(BaseHTTPRequestHandler):
             else:
             # Other errors
                 self.send_error(500, "Internal Server Error", trace)
-            self.close_connection = True
+#            self.close_connection = True
 
         finally:
-            self.wfile.flush() #actually send the response if not already done.
+            if not self.wfile.closed:
+                self.wfile.flush() #actually send the response if not already done.
 
 
     def format_message(self, code, message=None, debug_message=None, data=None):
@@ -166,3 +167,6 @@ class HTTPHandler(BaseHTTPRequestHandler):
             self.send_headers(200)
             self.headers_send = True
         self.wfile.write(message.encode('utf-8'))
+
+    def log_message(self, format, *args):
+        return

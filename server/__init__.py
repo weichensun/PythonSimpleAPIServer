@@ -24,7 +24,7 @@ class Server:
         self._key_file_path  = key_file_path
 
     def add_worker(self, request_path, worker_class):
-        self._router.add_route(request_path, worker_class)
+        self._router.add_worker(request_path, worker_class)
 
     def run(self, host='0.0.0.0', port='auto', debug=False, threading=False):
 
