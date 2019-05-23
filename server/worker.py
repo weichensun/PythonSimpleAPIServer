@@ -23,6 +23,12 @@ class Worker():
         # self.url_query = dict(parse.parse_qs(url_query_str))    # {"key":["value_1", "value_2"]}
 #        self.url_query = dict(parse.parse_qs(url_query_str))   # {"key": "value_2"}
 
+    def get_request_header(self, key, default=None):
+        return self.request_headers.get(key, default)
+
+    def get_route_param(self, key, default=None):
+        return self.route_params.get(key, default)
+
     def get_url_query(self, key, default=None):
         result = self.url_query.get(key)
         if result == None:

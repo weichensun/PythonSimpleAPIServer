@@ -17,16 +17,19 @@ class HelloWorker(Worker):
         print(data)
         return self.responseOK("OK")
 
-class ObjectWorker(Worker):
+class RouteParam(Worker):
     def do_GET(self):
-        object_id = self.route_params['id']
-        return self.responseOK("Object id = %s" % object_id)
+        return self.responseOK(self.get_route_param("param"))
 
-class UrlQueryWorker(Worker):
+class UrlQuery(Worker):
     def do_GET(self):
         return self.responseOK({"id":self.get_url_query('id')})
 
-class FileWorker(Worker):
+class Header(Worker):
+    def do_GET(self):
+        return self.responseOK(self.get_request_header("x-some-header"))
+
+class File(Worker):
     def do_GET(self):
         return self.responseFile('./image/lenna.png')
 
@@ -45,8 +48,9 @@ def auth(handler, route_params, url_query):
 server = Server()
 server.set_auth_function(auth)
 server.add_worker("/", HelloWorker)
-server.add_worker("/query", UrlQueryWorker)
-server.add_worker("/object/{id}", ObjectWorker)
-server.add_worker("/img", FileWorker)
+server.add_worker("/query", UrlQuery)
+server.add_worker("/route/{param}", RouteParam)
+server.add_worker("/header", Header)
+server.add_worker("/file", File)
 server.add_worker("/noimg", NoFileWorker)
 server.run(threading=True, debug=True)
