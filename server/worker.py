@@ -9,7 +9,7 @@ import os.path
 
 class Worker():
 
-    def __init__(self, http_handler, route_params, url_query_str):
+    def __init__(self, http_handler, route_params, url_query):
 
         # Keep handler to get more data
         self.http_handler = http_handler
@@ -17,9 +17,30 @@ class Worker():
         # Request data
         self.request_headers = http_handler.headers
         self.route_params    = route_params
-        self.url_query_str   = url_query_str
-        self.url_query       = dict()
+        self.url_query       = url_query
 
+        # e.g: ?key=value_1&key=value_2
+        # self.url_query = dict(parse.parse_qs(url_query_str))    # {"key":["value_1", "value_2"]}
+#        self.url_query = dict(parse.parse_qs(url_query_str))   # {"key": "value_2"}
+
+    def get_url_query(self, key, default=None):
+        result = self.url_query.get(key)
+        if result == None:
+            return result
+
+        if len(result) == 1:
+            return result[0]
+        else:
+            return result
+
+
+    def format_message(self, code, message=None, data=None):
+        output = {
+            'status'  : code,
+            'message' : message,
+            'data'    : data,
+        }
+        return json.dumps(output)
 
     def debug(self, message):
         self.http_handler.send_debug_message(message + "\n")
@@ -29,9 +50,12 @@ class Worker():
         self.http_handler.response_headers[header] = value
 
 
-    def responseOK(self, message):
-        self.http_handler.send_message(200, message)
+    def responseOK(self, data='', message='OK'):
+        self.http_handler.send_message(200, message=message, data=data)
 
+
+    def response(self, data):
+        pass
 
     def responseError(self, error_code, message='', data=''):
         self.http_handler.send_error(error_code, message, data)

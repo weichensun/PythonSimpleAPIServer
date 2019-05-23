@@ -41,6 +41,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
         BaseHTTPRequestHandler.__init__(self, request, client_address, server)
 
 
+    # Override
     def handle_one_request(self):
         """Handle a single HTTP request.
 
@@ -67,10 +68,11 @@ class HTTPHandler(BaseHTTPRequestHandler):
 
             url_result = urlparse.urlsplit(self.path)
             worker_class, route_params = self.router.get_worker(url_result.path)
+            url_query = dict(urlparse.parse_qs(url_result.query))
 
             # Global AUTH check first
             if self.auth_function:
-                result = self.auth_function(self, route_params, url_result.query)
+                result = self.auth_function(self, route_params, url_query)
                 if result != True and result != None:
                     # e.g:
                     # result['code'] = 401
@@ -84,7 +86,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 self.send_error(404, "Not found (%s)" % self.path)
                 return
 
-            worker = worker_class(self, route_params, url_result.query)
+            worker = worker_class(self, route_params, url_query)
 
             # Check worker support HTTP method existence
             mname = 'do_' + self.command
@@ -137,6 +139,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
         return json.dumps(output)
 
 
+    # Override
     def send_error(self, code, message=None, data=None):
         self.response_headers['Connection'] = 'close'
         if self.debug:
@@ -144,15 +147,18 @@ class HTTPHandler(BaseHTTPRequestHandler):
         else:
             self.send_message(code, message, None)
 
+
     def send_message(self, code, message=None, data=None):
         self.send_headers(code)
         if self.command != 'HEAD' and message or data:
             self.wfile.write(self.format_message(code, message, data).encode('utf-8'))
 
+
     def send_data(self, data):
         # Make sure 'send_headers' is called once before use this function
         if self.command != 'HEAD' and data:
             self.wfile.write(data)
+
 
     def send_headers(self, code):
         if not self.headers_send:
@@ -161,6 +167,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 self.send_header(header, value)
             self.end_headers()
             self.headers_send = True
+
 
     def send_debug_message(self, message):
         if not self.headers_send:
