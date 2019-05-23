@@ -23,24 +23,18 @@ And add some extra classes
 from server import Server
 from server.worker import Worker
 
-
-
-class HelloWorker(Worker):
+class Hello(Worker):
     def do_GET(self):
         return self.responseOK("HelloWorld !")
 
-
-
-class ObjectWorker(Worker):
+class RouteParam(Worker):
     def do_GET(self):
-        object_id = self.route_params['id']
-        return self.responseOK("Object id = %s" % object_id)
-
-
+        param = self.get_route_param('param')
+        return self.responseOK("Param = %s" % param)
 
 server = Server()
-server.add_worker("/", HelloWorker)
-server.add_worker("/object/{id}", ObjectWorker)
+server.add_worker("/", Hello)
+server.add_worker("/route/{param}", RouteParam)
 server.run(threading=True, debug=True)
 ```
 
