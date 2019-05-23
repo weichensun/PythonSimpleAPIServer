@@ -12,7 +12,7 @@ And add some extra classes
 3. Support HTTPS
 4. Use worker class make service more dynamic
 5. URL path variable
-6. Global Middleware support
+6. Global Middleware (auth function) support
 7. ~~Dynamic load worker class~~ *
 8. ~~Dynamic add route path~~
 
