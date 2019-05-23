@@ -13,7 +13,8 @@ class HelloWorker(Worker):
 
     def do_POST(self):
         data = self.getRequestBody()
-        return self.responseOK(data)
+        print(data)
+        return self.responseOK("OK")
 
 class ObjectWorker(Worker):
     def do_GET(self):
@@ -28,7 +29,16 @@ class NoFileWorker(Worker):
     def do_GET(self):
         return self.responseFile('./image/noimg.png')
 
+def auth(handler, route_params, url_query):
+    pass
+#    return True
+#    return {
+#        'code': 401,
+#        'reason': 'Unauthorized'
+#    }
+
 server = Server()
+server.set_auth_function(auth)
 server.add_worker("/", HelloWorker)
 server.add_worker("/object/{id}", ObjectWorker)
 server.add_worker("/image", FileWorker)

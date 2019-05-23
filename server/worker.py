@@ -29,12 +29,12 @@ class Worker():
         self.http_handler.response_headers[header] = value
 
 
-    def responseOK(self, message, debug_message=''):
-        self.http_handler.send_message(200, message, debug_message)
+    def responseOK(self, message):
+        self.http_handler.send_message(200, message)
 
 
-    def responseError(self, error_code, message='', debug_message=''):
-        self.http_handler.send_error(error_code, message, debug_message)
+    def responseError(self, error_code, message='', data=''):
+        self.http_handler.send_error(error_code, message, data)
 
 
     def responseFile(self, file_path, block_size=2048):
